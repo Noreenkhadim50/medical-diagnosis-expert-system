@@ -1,376 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Medical Diagnosis Expert System</title>
+  <title>Medical Diagnosis Expert System</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #ffffff;
-      --bg2: #f5f5f3;
-      --bg3: #eeecea;
-      --text: #1a1a18;
-      --text2: #6b6b67;
-      --border: rgba(0,0,0,0.12);
-      --border2: rgba(0,0,0,0.22);
-      --info-bg: #e6f1fb;
-      --info-text: #185fa5;
-      --info-border: rgba(24,95,165,0.3);
-      --warn-bg: #faeeda;
-      --warn-text: #854f0b;
-      --warn-border: rgba(133,79,11,0.3);
-      --success-bg: #eaf3de;
-      --success-text: #3b6d11;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeecea;
+      --text: #1a1a18; --text2: #6b6b67;
+      --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+      --info-bg: #e6f1fb; --info-text: #185fa5; --info-border: rgba(24,95,165,0.3);
+      --warn-bg: #faeeda; --warn-text: #854f0b; --warn-border: rgba(133,79,11,0.3);
+      --success-bg: #eaf3de; --success-text: #3b6d11; --success-border: rgba(59,109,17,0.3);
+      --danger-bg: #fcebeb; --danger-text: #a32d2d; --danger-border: rgba(163,45,45,0.3);
+      --radius-md: 8px; --radius-lg: 12px;
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #1c1c1a;
-        --bg2: #252523;
-        --bg3: #2e2e2b;
-        --text: #f0ede8;
-        --text2: #9a9a94;
-        --border: rgba(255,255,255,0.1);
-        --border2: rgba(255,255,255,0.2);
-        --info-bg: #0c2d4e;
-        --info-text: #85b7eb;
-        --info-border: rgba(133,183,235,0.3);
-        --warn-bg: #3d2508;
-        --warn-text: #fac775;
-        --warn-border: rgba(250,199,117,0.3);
-        --success-bg: #172d08;
-        --success-text: #97c459;
+        --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2b;
+        --text: #f0ede8; --text2: #9a9a94;
+        --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+        --info-bg: #0c2d4e; --info-text: #85b7eb;
+        --warn-bg: #3d2508; --warn-text: #fac775;
+        --success-bg: #172d08; --success-text: #97c459;
+        --danger-bg: #3d1010; --danger-text: #f09595;
       }
     }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+    .app { max-width: 920px; margin: 0 auto; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg3);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 2rem 1rem;
-      line-height: 1.6;
-    }
+    /* Header */
+    .header { text-align: center; margin-bottom: 2rem; padding: 2.5rem 2rem; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--info-bg); color: var(--info-text); font-size: 12px; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; font-weight: 500; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.3px; }
+    .header p { font-size: 15px; color: var(--text2); }
 
-    .app {
-      max-width: 860px;
-      margin: 0 auto;
-    }
+    /* Disclaimer */
+    .disclaimer { background: var(--warn-bg); border: 0.5px solid var(--warn-border); border-radius: var(--radius-md); padding: 11px 16px; margin-bottom: 1.5rem; font-size: 13px; color: var(--warn-text); display: flex; gap: 10px; align-items: flex-start; line-height: 1.6; }
 
-    /* ── Header ── */
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 2rem;
-      background: var(--bg);
-      border-radius: var(--radius-lg);
-      border: 0.5px solid var(--border);
-    }
-    .header-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--info-bg);
-      color: var(--info-text);
-      font-size: 12px;
-      padding: 4px 14px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-      border: 0.5px solid var(--info-border);
-    }
-    .header h1 { font-size: 26px; font-weight: 600; margin-bottom: 6px; }
-    .header p  { font-size: 14px; color: var(--text2); }
+    /* Layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
 
-    /* ── Disclaimer ── */
-    .disclaimer {
-      background: var(--warn-bg);
-      border: 0.5px solid var(--warn-border);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      margin-bottom: 1.5rem;
-      font-size: 13px;
-      color: var(--warn-text);
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-    }
+    .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
+    .card-title { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text2); margin-bottom: 1.25rem; }
 
-    /* ── Layout ── */
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
+    /* Form */
+    .field-group { margin-bottom: 16px; }
+    .field-group:last-child { margin-bottom: 0; }
+    .field-label { font-size: 13px; color: var(--text2); margin-bottom: 6px; display: block; font-weight: 500; }
+    input[type="number"], input[type="text"], select {
+      width: 100%; padding: 9px 11px; border: 0.5px solid var(--border2);
+      border-radius: var(--radius-md); background: var(--bg2); color: var(--text);
+      font-size: 14px; outline: none; transition: border-color 0.15s;
     }
-    @media (max-width: 620px) { .two-col { grid-template-columns: 1fr; } }
+    input:focus, select:focus { border-color: var(--info-text); box-shadow: 0 0 0 3px rgba(24,95,165,0.08); }
 
-    .card {
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem;
-    }
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text2);
-      margin-bottom: 1rem;
-    }
+    .sev-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+    .sev-row input[type="range"] { flex: 1; accent-color: var(--info-text); cursor: pointer; }
+    .sev-num { font-size: 16px; font-weight: 700; min-width: 24px; text-align: center; }
+    .sev-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); margin-top: 4px; }
 
-    /* ── Form ── */
-    .field-group { margin-bottom: 14px; }
-    .field-label { font-size: 13px; color: var(--text2); margin-bottom: 5px; display: block; }
+    /* Symptom chips */
+    .symptom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .chip { display: flex; align-items: center; gap: 8px; padding: 8px 11px; border: 0.5px solid var(--border); border-radius: var(--radius-md); cursor: pointer; font-size: 13px; color: var(--text2); background: var(--bg); transition: all 0.15s; user-select: none; }
+    .chip:hover { border-color: var(--info-border); color: var(--info-text); background: var(--info-bg); }
+    .chip.active { border-color: var(--info-border); background: var(--info-bg); color: var(--info-text); font-weight: 500; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); flex-shrink: 0; transition: background 0.15s; }
+    .chip.active .dot { background: var(--info-text); }
 
-    input[type="number"],
-    input[type="text"],
-    select {
-      width: 100%;
-      padding: 8px 10px;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-md);
-      background: var(--bg2);
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    input:focus, select:focus { border-color: var(--info-text); }
+    .selected-count { font-size: 12px; color: var(--info-text); margin-top: 10px; font-weight: 500; min-height: 18px; }
 
-    .severity-slider { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
-    .severity-slider input[type="range"] { flex: 1; accent-color: var(--info-text); }
-    .severity-val { font-size: 14px; font-weight: 600; min-width: 20px; color: var(--text); }
+    /* Button */
+    .analyze-btn { width: 100%; padding: 14px; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius-md); font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 1rem; transition: opacity 0.15s; letter-spacing: 0.2px; }
+    .analyze-btn:hover { opacity: 0.83; }
 
-    /* ── Symptom chips ── */
-    .symptom-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-    .symptom-chip {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 10px;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text2);
-      background: var(--bg);
-      transition: all 0.15s;
-      user-select: none;
-    }
-    .symptom-chip:hover { border-color: var(--info-border); color: var(--info-text); background: var(--info-bg); }
-    .symptom-chip.active { border-color: var(--info-border); background: var(--info-bg); color: var(--info-text); font-weight: 500; }
-    .chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); flex-shrink: 0; transition: background 0.15s; }
-    .symptom-chip.active .chip-dot { background: var(--info-text); }
+    /* Results */
+    .result-section { margin-top: 1.75rem; display: none; }
+    .result-section.show { display: block; }
+    .result-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; }
 
-    /* ── Button ── */
-    .analyze-btn {
-      width: 100%;
-      padding: 13px;
-      background: var(--text);
-      color: var(--bg);
-      border: none;
-      border-radius: var(--radius-md);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 1rem;
-      transition: opacity 0.15s;
-    }
-    .analyze-btn:hover { opacity: 0.82; }
-    .analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* ── Result ── */
-    .result-section { margin-top: 1.5rem; display: none; }
-    .result-section.visible { display: block; }
-
-    .result-card {
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-    }
-    .result-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 0.5px solid var(--border);
-      flex-wrap: wrap;
-    }
-    .result-header h2 { font-size: 17px; font-weight: 600; flex: 1; }
+    .result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
+    .result-header h2 { font-size: 18px; font-weight: 700; flex: 1; }
     .meta-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .meta-chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; border: 0.5px solid; }
-    .chip-age { background: var(--bg2); border-color: var(--border2); color: var(--text2); }
-    .chip-sev { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+    .meta-chip { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text2); font-weight: 500; }
 
-    .thinking {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 2rem;
-      justify-content: center;
-      color: var(--text2);
-      font-size: 14px;
-    }
-    .dot-pulse { display: flex; gap: 5px; }
-    .dot-pulse span {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--text2);
-      animation: dpulse 1.2s ease-in-out infinite;
-    }
-    .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
-    .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dpulse {
-      0%,80%,100% { transform: scale(0.5); opacity: 0.3; }
-      40% { transform: scale(1); opacity: 1; }
-    }
+    .section-block { margin-bottom: 1.5rem; }
+    .section-block:last-of-type { margin-bottom: 0; }
+    .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
 
-    .result-content {
-      font-size: 14px;
-      line-height: 1.9;
-      color: var(--text);
-      white-space: pre-wrap;
-      display: none;
-    }
-    .result-content.visible { display: block; }
+    .condition-card { border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; transition: border-color 0.15s; }
+    .condition-card:last-child { margin-bottom: 0; }
+    .condition-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 8px; flex-wrap: wrap; }
+    .condition-name { font-weight: 700; font-size: 15px; }
+    .prob-badge { font-size: 11px; padding: 3px 12px; border-radius: 20px; font-weight: 700; white-space: nowrap; }
+    .prob-high   { background: var(--danger-bg);  color: var(--danger-text); }
+    .prob-medium { background: var(--warn-bg);    color: var(--warn-text); }
+    .prob-low    { background: var(--success-bg); color: var(--success-text); }
+    .condition-desc { font-size: 13px; color: var(--text2); line-height: 1.65; }
 
-    /* ── Follow-up ── */
-    .ask-followup {
-      margin-top: 1rem;
-      display: none;
-      gap: 8px;
-    }
-    .ask-followup.visible { display: flex; }
-    .ask-followup input { flex: 1; }
-    .ask-followup button {
-      padding: 8px 16px;
-      background: var(--info-bg);
-      color: var(--info-text);
-      border: 0.5px solid var(--info-border);
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .ask-followup button:hover { opacity: 0.8; }
+    .info-list { list-style: none; }
+    .info-list li { font-size: 14px; padding: 7px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-start; gap: 9px; line-height: 1.55; }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list li i { flex-shrink: 0; margin-top: 2px; font-size: 15px; }
 
-    /* ── History ── */
-    .history-section { margin-top: 1.5rem; display: none; }
-    .history-section.visible { display: block; }
-    .history-title { font-size: 13px; color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .history-list { display: flex; flex-direction: column; gap: 8px; }
-    .history-item {
-      background: var(--bg);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      font-size: 13px;
-      color: var(--text2);
-      border: 0.5px solid var(--border);
-    }
-    .history-item strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 13px; }
+    .alert-box { border-radius: var(--radius-md); padding: 14px 16px; font-size: 14px; line-height: 1.7; }
+    .alert-danger  { background: var(--danger-bg);  color: var(--danger-text);  border: 0.5px solid var(--danger-border); }
+    .alert-info    { background: var(--info-bg);    color: var(--info-text);    border: 0.5px solid var(--info-border); }
+    .alert-success { background: var(--success-bg); color: var(--success-text); border: 0.5px solid var(--success-border); }
 
-    /* ── API Key notice ── */
-    .api-notice {
-      background: var(--success-bg);
-      color: var(--success-text);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      font-size: 13px;
-      margin-bottom: 1.5rem;
-      border: 0.5px solid rgba(0,0,0,0.08);
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-    }
+    .reset-btn { margin-top: 1.5rem; width: 100%; padding: 11px; background: var(--bg2); color: var(--text2); border: 0.5px solid var(--border2); border-radius: var(--radius-md); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; font-weight: 500; transition: background 0.15s; }
+    .reset-btn:hover { background: var(--bg3); }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spin { animation: spin 1s linear infinite; display: inline-block; }
-
-    .hidden { display: none !important; }
+    .divider { height: 0.5px; background: var(--border); margin: 1.5rem 0; }
   </style>
 </head>
 <body>
 <div class="app">
 
   <div class="header">
-    <div class="header-badge">
-      <i class="ti ti-stethoscope"></i> Expert System — AI Powered
-    </div>
-    <h1>🏥 Medical Diagnosis Assistant</h1>
-    <p>Enter patient info &amp; symptoms — AI will suggest possible conditions</p>
-    <p style="font-size:12px;color:var(--text2);margin-top:6px">
-      Semester Project — Expert Systems &amp; Applied AI
-    </p>
-  </div>
-
-  <!-- API Key Input -->
-  <div class="card" style="margin-bottom:1rem">
-    <div class="card-title"><i class="ti ti-key"></i> Anthropic API Key</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input type="password" id="api-key" placeholder="sk-ant-..." style="flex:1"/>
-      <button onclick="saveKey()" style="padding:8px 16px;background:var(--info-bg);color:var(--info-text);border:0.5px solid var(--info-border);border-radius:var(--radius-md);cursor:pointer;font-size:13px;white-space:nowrap">Save</button>
-    </div>
-    <p style="font-size:12px;color:var(--text2);margin-top:6px">
-      Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--info-text)">console.anthropic.com</a> — key stays in your browser only
-    </p>
+    <div class="badge"><i class="ti ti-stethoscope"></i> Rule-Based Expert System</div>
+    <h1>Medical Diagnosis Assistant</h1>
+    <p>Enter patient details and select symptoms to receive an AI-assisted diagnosis report.</p>
   </div>
 
   <div class="disclaimer">
-    <i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
-    <span>Sirf educational purposes ke liye — real doctor se consult zaroor karen. This is a semester project demo.</span>
+    <i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0;margin-top:2px"></i>
+    <span>This tool is for <strong>educational purposes only</strong> and does not replace professional medical advice. Always consult a licensed physician for any health concerns.</span>
   </div>
 
   <div class="two-col">
     <!-- Patient Info -->
     <div class="card">
-      <div class="card-title"><i class="ti ti-user"></i> Patient Info</div>
+      <div class="card-title"><i class="ti ti-user"></i> Patient Information</div>
+
       <div class="field-group">
-        <label class="field-label" for="age">Age</label>
+        <label class="field-label" for="age">Age (years)</label>
         <input type="number" id="age" min="1" max="120" placeholder="e.g. 35"/>
       </div>
       <div class="field-group">
         <label class="field-label" for="gender">Gender</label>
         <select id="gender">
-          <option value="">Select...</option>
+          <option value="">Select gender...</option>
           <option>Male</option>
           <option>Female</option>
           <option>Other</option>
         </select>
       </div>
       <div class="field-group">
-        <label class="field-label">Pain Severity (1–10)</label>
-        <div class="severity-slider">
+        <label class="field-label">Pain / Discomfort Severity</label>
+        <div class="sev-row">
           <input type="range" id="severity" min="1" max="10" value="5" step="1"/>
-          <span class="severity-val" id="sev-val">5</span>
+          <span class="sev-num" id="sev-val">5</span>
         </div>
+        <div class="sev-labels"><span>Mild (1)</span><span>Moderate (5)</span><span>Severe (10)</span></div>
       </div>
       <div class="field-group">
-        <label class="field-label" for="duration">Duration</label>
+        <label class="field-label" for="duration">Duration of Symptoms</label>
         <select id="duration">
-          <option value="">Select...</option>
+          <option value="">Select duration...</option>
           <option>Less than 1 day</option>
-          <option>1–3 days</option>
-          <option>4–7 days</option>
-          <option>1–2 weeks</option>
+          <option>1 to 3 days</option>
+          <option>4 to 7 days</option>
+          <option>1 to 2 weeks</option>
           <option>More than 2 weeks</option>
         </select>
       </div>
@@ -380,216 +174,251 @@
     <div class="card">
       <div class="card-title"><i class="ti ti-list-check"></i> Select Symptoms</div>
       <div class="symptom-grid" id="symptom-grid"></div>
+      <div class="selected-count" id="selected-count"></div>
       <div class="field-group" style="margin-top:12px">
-        <label class="field-label" for="extra-symptoms">Additional symptoms (optional)</label>
-        <input type="text" id="extra-symptoms" placeholder="e.g. back pain, nausea..."/>
+        <label class="field-label" for="extra">Additional symptoms (optional)</label>
+        <input type="text" id="extra" placeholder="e.g. back pain, night sweats..."/>
       </div>
     </div>
   </div>
 
-  <button class="analyze-btn" id="analyze-btn" onclick="runDiagnosis()">
-    <i class="ti ti-brain"></i>
-    Analyze with AI Expert System
+  <button class="analyze-btn" onclick="analyze()">
+    <i class="ti ti-brain"></i> Run Diagnosis
   </button>
 
-  <!-- Result -->
+  <!-- Results -->
   <div class="result-section" id="result-section">
     <div class="result-card">
+
       <div class="result-header">
-        <i class="ti ti-report-medical" style="font-size:20px;color:var(--info-text)"></i>
+        <i class="ti ti-report-medical" style="font-size:24px;color:var(--info-text)"></i>
         <h2>Diagnosis Report</h2>
         <div class="meta-chips">
-          <span class="meta-chip chip-age" id="meta-age"></span>
-          <span class="meta-chip chip-sev" id="meta-sev"></span>
+          <span class="meta-chip" id="meta-age"></span>
+          <span class="meta-chip" id="meta-sev"></span>
+          <span class="meta-chip" id="meta-dur"></span>
         </div>
       </div>
-      <div id="thinking" class="thinking hidden">
-        <div class="dot-pulse"><span></span><span></span><span></span></div>
-        AI Expert System analyzing symptoms...
+
+      <div class="section-block">
+        <div class="section-title" style="color:var(--danger-text)">
+          <i class="ti ti-stethoscope"></i> Possible Conditions
+        </div>
+        <div id="conditions-list"></div>
       </div>
-      <div class="result-content" id="result-text"></div>
-      <div class="ask-followup" id="followup-area">
-        <input type="text" id="followup-input" placeholder="Ask a follow-up question..." onkeydown="if(event.key==='Enter')askFollowup()"/>
-        <button onclick="askFollowup()">Ask ↗</button>
+
+      <div class="divider"></div>
+
+      <div class="section-block">
+        <div class="section-title" style="color:var(--info-text)">
+          <i class="ti ti-flask"></i> Recommended Diagnostic Tests
+        </div>
+        <ul class="info-list" id="tests-list"></ul>
       </div>
+
+      <div class="divider"></div>
+
+      <div class="section-block">
+        <div class="section-title" style="color:var(--warn-text)">
+          <i class="ti ti-clock"></i> Immediate Actions
+        </div>
+        <ul class="info-list" id="actions-list"></ul>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-block">
+        <div class="section-title" style="color:var(--danger-text)">
+          <i class="ti ti-alert-triangle"></i> Red Flags — Seek Emergency Care If
+        </div>
+        <div class="alert-box alert-danger" id="redflags-box"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-block">
+        <div class="section-title" style="color:var(--success-text)">
+          <i class="ti ti-leaf"></i> Lifestyle & Self-Care Advice
+        </div>
+        <div class="alert-box alert-success" id="lifestyle-box"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="alert-box alert-info">
+        <i class="ti ti-info-circle"></i> <strong>Disclaimer:</strong> This diagnosis is generated by a rule-based expert system and is intended for educational use only. Please consult a qualified medical professional for accurate diagnosis and treatment.
+      </div>
+
+      <button class="reset-btn" onclick="resetForm()">
+        <i class="ti ti-refresh"></i> Start New Diagnosis
+      </button>
     </div>
   </div>
 
-  <!-- History -->
-  <div class="history-section" id="history-section">
-    <div class="history-title"><i class="ti ti-history"></i> Recent Diagnoses</div>
-    <div class="history-list" id="history-list"></div>
-  </div>
-
-  <footer style="text-align:center;margin-top:2rem;font-size:12px;color:var(--text2);padding:1rem">
-    Expert Systems &amp; Applied AI — Semester Project &nbsp;|&nbsp; AI-Powered Medical Diagnosis System
-  </footer>
 </div>
-
 <script>
 const SYMPTOMS = [
-  { id:"fever",           label:"Fever",              icon:"ti-thermometer" },
-  { id:"cough",           label:"Cough",              icon:"ti-lungs" },
-  { id:"headache",        label:"Headache",           icon:"ti-brain" },
-  { id:"fatigue",         label:"Fatigue",            icon:"ti-zzz" },
-  { id:"sore_throat",     label:"Sore Throat",        icon:"ti-droplet" },
-  { id:"body_ache",       label:"Body Ache",          icon:"ti-walk" },
-  { id:"nausea",          label:"Nausea",             icon:"ti-mood-sick" },
-  { id:"diarrhea",        label:"Diarrhea",           icon:"ti-wave-sine" },
-  { id:"chest_pain",      label:"Chest Pain",         icon:"ti-heart-rate-monitor" },
-  { id:"short_breath",    label:"Shortness of Breath",icon:"ti-wind" },
-  { id:"abdominal_pain",  label:"Abdominal Pain",     icon:"ti-stethoscope" },
-  { id:"runny_nose",      label:"Runny Nose",         icon:"ti-droplet-half-2" },
-  { id:"dizziness",       label:"Dizziness",          icon:"ti-rotate" },
-  { id:"rash",            label:"Skin Rash",          icon:"ti-square-half" },
-  { id:"vomiting",        label:"Vomiting",           icon:"ti-arrows-down-up" },
-  { id:"joint_pain",      label:"Joint Pain",         icon:"ti-bone" }
+  { id:"fever",       label:"Fever",               icon:"ti-thermometer" },
+  { id:"cough",       label:"Cough",               icon:"ti-lungs" },
+  { id:"headache",    label:"Headache",            icon:"ti-brain" },
+  { id:"fatigue",     label:"Fatigue",             icon:"ti-zzz" },
+  { id:"sore_throat", label:"Sore Throat",         icon:"ti-droplet" },
+  { id:"body_ache",   label:"Body Ache",           icon:"ti-walk" },
+  { id:"nausea",      label:"Nausea",              icon:"ti-mood-sick" },
+  { id:"diarrhea",    label:"Diarrhea",            icon:"ti-wave-sine" },
+  { id:"chest_pain",  label:"Chest Pain",          icon:"ti-heart-rate-monitor" },
+  { id:"breath",      label:"Shortness of Breath", icon:"ti-wind" },
+  { id:"stomach",     label:"Abdominal Pain",      icon:"ti-stethoscope" },
+  { id:"runny_nose",  label:"Runny Nose",          icon:"ti-droplet-half-2" },
+  { id:"dizziness",   label:"Dizziness",           icon:"ti-rotate" },
+  { id:"rash",        label:"Skin Rash",           icon:"ti-square-half" },
+  { id:"vomiting",    label:"Vomiting",            icon:"ti-arrows-down-up" },
+  { id:"joint_pain",  label:"Joint Pain",          icon:"ti-bone" }
+];
+
+const KB = [
+  { name:"Common Cold", symptoms:["cough","runny_nose","sore_throat","fatigue","headache"], minMatch:3, prob:"High",
+    desc:"A viral infection affecting the nose and throat. Usually mild and resolves within 7 to 10 days without medical treatment.",
+    tests:["No specific test required in most cases","CBC blood test if fever is persistent"],
+    actions:["Rest and stay hydrated","Take paracetamol for fever and pain relief","Use saline nasal spray for congestion"],
+    redflags:"Fever above 103°F, difficulty breathing, symptoms lasting more than 10 days, or severe worsening after initial improvement.",
+    lifestyle:"Drink warm fluids, consume vitamin C-rich foods, and avoid close contact with others to prevent spreading the infection." },
+
+  { name:"Influenza (Flu)", symptoms:["fever","body_ache","fatigue","headache","cough","sore_throat"], minMatch:4, prob:"High",
+    desc:"A highly contagious viral respiratory illness. Symptoms appear suddenly and are more severe than the common cold.",
+    tests:["Rapid Influenza Diagnostic Test (RIDT)","Complete Blood Count (CBC)","Chest X-ray if complications are suspected"],
+    actions:["Rest immediately and isolate from others","Consult a doctor about antiviral medication (Oseltamivir) within 48 hours","Maintain high fluid intake to prevent dehydration"],
+    redflags:"Difficulty breathing, persistent chest pain, bluish lips or face, confusion, or severe vomiting — seek emergency care immediately.",
+    lifestyle:"Stay home until fever-free for 24 hours. Get an annual flu vaccine. Wash hands frequently and avoid crowded places during flu season." },
+
+  { name:"Typhoid Fever", symptoms:["fever","stomach","headache","fatigue","diarrhea","body_ache"], minMatch:3, prob:"Medium",
+    desc:"A bacterial infection caused by Salmonella typhi, commonly spread through contaminated food and water. Prevalent in South Asia.",
+    tests:["Widal Test","Blood Culture (most reliable method)","Complete Blood Count (CBC)","Stool and urine culture"],
+    actions:["Seek immediate medical attention — antibiotics are required","Drink only boiled or filtered water","Hospital admission may be necessary for severe cases"],
+    redflags:"Severe abdominal pain, intestinal bleeding, altered consciousness, or signs of perforation — requires emergency surgery.",
+    lifestyle:"Drink only boiled or bottled water. Avoid street food. Maintain strict hand hygiene. Consider getting the typhoid vaccine." },
+
+  { name:"Dengue Fever", symptoms:["fever","headache","body_ache","rash","fatigue","joint_pain"], minMatch:3, prob:"Medium",
+    desc:"A viral infection transmitted by the Aedes mosquito, common in tropical regions. Characterized by high fever and severe joint pain.",
+    tests:["NS1 Antigen Test (early detection)","Dengue IgM / IgG Antibody Test","Complete Blood Count (monitor platelet levels)","Liver Function Test"],
+    actions:["Seek medical care immediately","Take only paracetamol for pain — avoid aspirin and ibuprofen","Increase fluid and ORS (oral rehydration solution) intake"],
+    redflags:"Bleeding from nose or gums, black stools, severe abdominal pain, persistent vomiting, or platelet count below 100,000 — emergency hospitalization required.",
+    lifestyle:"Use mosquito repellents and wear full-sleeve clothing. Eliminate stagnant water around the home. Install mosquito nets on windows." },
+
+  { name:"Malaria", symptoms:["fever","headache","body_ache","fatigue","vomiting","dizziness"], minMatch:3, prob:"Medium",
+    desc:"A parasitic infection transmitted by the Anopheles mosquito. Characterized by cyclical high fever, chills, and sweating.",
+    tests:["Malaria Rapid Diagnostic Test (RDT)","Blood Smear Microscopy (gold standard)","Complete Blood Count (CBC)"],
+    actions:["Seek medical treatment immediately — antimalarial drugs are required","Maintain hydration with water and electrolytes","Take paracetamol to manage fever"],
+    redflags:"Loss of consciousness, seizures, jaundice, dark urine, or cessation of urination — life-threatening emergency requiring immediate hospitalization.",
+    lifestyle:"Sleep under insecticide-treated mosquito nets. Apply mosquito repellent at dusk. Take prophylactic antimalarial medication when traveling to endemic areas." },
+
+  { name:"Gastroenteritis / Food Poisoning", symptoms:["nausea","vomiting","diarrhea","stomach","fever","fatigue"], minMatch:3, prob:"High",
+    desc:"Inflammation of the stomach and intestines, typically caused by contaminated food or water. Usually resolves within 2 to 3 days.",
+    tests:["Stool Routine Examination","Complete Blood Count (CBC)","Serum Electrolytes"],
+    actions:["Begin ORS (Oral Rehydration Solution) immediately","Sip small amounts of clear fluids frequently","Eat bland foods such as rice, toast, and bananas","Consult a doctor if symptoms persist beyond 48 hours"],
+    redflags:"Bloody diarrhea, no urine output for 24 hours, high fever, severe dehydration signs, or loss of consciousness — seek emergency care.",
+    lifestyle:"Practice strict hand hygiene before meals. Avoid raw or undercooked food. Drink only clean, treated water. Store food at proper temperatures." },
+
+  { name:"Hypertension (High Blood Pressure)", symptoms:["headache","dizziness","chest_pain","fatigue","breath"], minMatch:3, prob:"Medium",
+    desc:"A chronic condition where blood pressure in the arteries is persistently elevated. Often called the 'silent killer' as it may have no symptoms.",
+    tests:["Blood Pressure Measurement (multiple readings on separate days)","Electrocardiogram (ECG)","Fasting Lipid Profile and Kidney Function Tests","Urinalysis"],
+    actions:["Monitor blood pressure regularly at home","Reduce sodium (salt) intake immediately","Consult a doctor for antihypertensive medication if needed"],
+    redflags:"Blood pressure reading above 180/120 mmHg, sudden severe headache, vision changes, chest pain, or difficulty speaking — hypertensive emergency.",
+    lifestyle:"Reduce salt and processed food intake. Maintain a healthy weight. Exercise for 30 minutes daily. Limit alcohol and quit smoking. Manage stress through relaxation techniques." },
+
+  { name:"Asthma", symptoms:["breath","cough","chest_pain","fatigue"], minMatch:3, prob:"Medium",
+    desc:"A chronic respiratory condition characterized by inflammation and narrowing of the airways, causing recurrent episodes of wheezing and breathlessness.",
+    tests:["Spirometry (Pulmonary Function Test)","Peak Expiratory Flow (PEF) Measurement","Chest X-ray","Allergy Skin Prick Tests"],
+    actions:["Obtain a prescription inhaler (bronchodilator) from your doctor","Identify and avoid personal asthma triggers such as dust, smoke, and pollen","Always carry a rescue inhaler"],
+    redflags:"Inhaler provides no relief, lips or fingernails turn blue, inability to speak full sentences, or peak flow below 50% — call emergency services immediately.",
+    lifestyle:"Keep indoor air clean — use air purifiers and clean AC filters regularly. Avoid tobacco smoke. Exercise moderately with your inhaler nearby. Follow an asthma action plan." },
+
+  { name:"Migraine", symptoms:["headache","nausea","vomiting","dizziness","fatigue"], minMatch:3, prob:"Medium",
+    desc:"A neurological condition causing recurrent moderate-to-severe headaches, often on one side of the head, accompanied by sensitivity to light and sound.",
+    tests:["Clinical neurological examination","MRI or CT Scan of the brain (for new or severe headaches)","Complete Blood Count (CBC)"],
+    actions:["Rest in a quiet, dark room at the onset of symptoms","Take pain relievers early in the attack","Consult a neurologist for preventive therapy if attacks are frequent"],
+    redflags:"Sudden worst-ever headache, stiff neck with fever, headache after head injury, vision loss, or weakness on one side — rule out meningitis or stroke immediately.",
+    lifestyle:"Maintain a consistent sleep schedule. Identify and avoid migraine triggers (certain foods, stress, dehydration). Stay hydrated and limit caffeine and alcohol." }
 ];
 
 const grid = document.getElementById("symptom-grid");
 SYMPTOMS.forEach(s => {
-  const chip = document.createElement("div");
-  chip.className = "symptom-chip";
-  chip.dataset.id = s.id;
-  chip.innerHTML = `<span class="chip-dot"></span><i class="ti ${s.icon}" style="font-size:13px;flex-shrink:0"></i><span>${s.label}</span>`;
-  chip.onclick = () => chip.classList.toggle("active");
-  grid.appendChild(chip);
+  const c = document.createElement("div");
+  c.className = "chip"; c.dataset.id = s.id;
+  c.innerHTML = `<span class="dot"></span><i class="ti ${s.icon}" style="font-size:13px;flex-shrink:0"></i><span>${s.label}</span>`;
+  c.onclick = () => { c.classList.toggle("active"); updateCount(); };
+  grid.appendChild(c);
 });
 
 document.getElementById("severity").addEventListener("input", e => {
   document.getElementById("sev-val").textContent = e.target.value;
 });
 
-let storedKey = localStorage.getItem("anthro_key") || "";
-if (storedKey) document.getElementById("api-key").value = storedKey;
-
-function saveKey() {
-  const k = document.getElementById("api-key").value.trim();
-  if (k) { localStorage.setItem("anthro_key", k); alert("API key saved!"); }
+function updateCount() {
+  const n = document.querySelectorAll(".chip.active").length;
+  const el = document.getElementById("selected-count");
+  el.textContent = n > 0 ? n + " symptom" + (n > 1 ? "s" : "") + " selected" : "";
 }
 
-let diagnosisHistory = [];
-
-async function runDiagnosis() {
-  const age      = document.getElementById("age").value;
-  const gender   = document.getElementById("gender").value;
+function analyze() {
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
   const severity = document.getElementById("severity").value;
   const duration = document.getElementById("duration").value;
-  const extra    = document.getElementById("extra-symptoms").value.trim();
-  const apiKey   = document.getElementById("api-key").value.trim() || localStorage.getItem("anthro_key") || "";
-
-  const selected = [...document.querySelectorAll(".symptom-chip.active")]
-    .map(c => c.querySelector("span:last-child").textContent);
+  const selected = [...document.querySelectorAll(".chip.active")].map(c => c.dataset.id);
 
   if (!age || !gender || selected.length === 0) {
-    alert("Please fill in age, gender, and select at least one symptom."); return;
-  }
-  if (!apiKey) {
-    alert("Please enter your Anthropic API key above."); return;
+    alert("Please enter age, select gender, and choose at least one symptom to proceed."); return;
   }
 
-  const btn = document.getElementById("analyze-btn");
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Analyzing...';
+  const matches = KB
+    .map(d => ({ ...d, matchCount: d.symptoms.filter(s => selected.includes(s)).length }))
+    .filter(d => d.matchCount >= d.minMatch)
+    .sort((a, b) => b.matchCount - a.matchCount)
+    .slice(0, 3);
 
-  const rs = document.getElementById("result-section");
-  rs.classList.add("visible");
-  document.getElementById("thinking").classList.remove("hidden");
-  document.getElementById("result-text").classList.remove("visible");
-  document.getElementById("followup-area").classList.remove("visible");
-
-  document.getElementById("meta-age").textContent = `${age}y  ${gender}`;
-  document.getElementById("meta-sev").textContent  = `Severity: ${severity}/10`;
-
-  const allSymptoms = [...selected, ...(extra ? [extra] : [])].join(", ");
-
-  const prompt = `You are an AI Medical Diagnosis Expert System for an educational university semester project.
-
-Patient Information:
-- Age: ${age} years old
-- Gender: ${gender}
-- Symptoms: ${allSymptoms}
-- Pain/Discomfort Severity: ${severity}/10
-- Duration: ${duration || "not specified"}
-
-Provide a structured medical diagnosis report:
-
-1. TOP 3 POSSIBLE CONDITIONS — each with probability (High/Medium/Low) and brief explanation
-2. SYMPTOM ANALYSIS — what this combination suggests
-3. RECOMMENDED TESTS — diagnostic tests needed
-4. IMMEDIATE ACTIONS — what patient should do now
-5. RED FLAGS — signs that need emergency attention
-6. LIFESTYLE ADVICE — general care tips
-
-Keep it clear and educational. End with a reminder to consult a real doctor.`;
-
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-
-    const text = data.content?.map(b => b.text || "").join("") || "No response.";
-
-    document.getElementById("thinking").classList.add("hidden");
-    const el = document.getElementById("result-text");
-    el.classList.add("visible");
-    el.textContent = "";
-
-    let i = 0;
-    const t = setInterval(() => {
-      el.textContent = text.slice(0, i);
-      i += 10;
-      if (i >= text.length) {
-        el.textContent = text;
-        clearInterval(t);
-        document.getElementById("followup-area").classList.add("visible");
-      }
-    }, 16);
-
-    diagnosisHistory.unshift({ symptoms: allSymptoms, age, gender, preview: text.slice(0, 90) + "…" });
-    renderHistory();
-
-  } catch (err) {
-    document.getElementById("thinking").classList.add("hidden");
-    const el = document.getElementById("result-text");
-    el.classList.add("visible");
-    el.textContent = "Error: " + err.message;
+  if (matches.length === 0) {
+    alert("No conditions matched the selected symptoms. Please select additional symptoms or consult a physician."); return;
   }
 
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-brain"></i> Analyze with AI Expert System';
-}
+  document.getElementById("meta-age").textContent = age + " years, " + gender;
+  document.getElementById("meta-sev").textContent = "Severity: " + severity + " / 10";
+  document.getElementById("meta-dur").textContent = duration || "Duration not specified";
 
-function askFollowup() {
-  const q = document.getElementById("followup-input").value.trim();
-  if (!q) return;
-  document.getElementById("followup-input").value = "";
-  alert("Follow-up: " + q + "\n\n(In the deployed version, this sends to AI for a new response)");
-}
-
-function renderHistory() {
-  if (!diagnosisHistory.length) return;
-  const hs = document.getElementById("history-section");
-  hs.classList.add("visible");
-  document.getElementById("history-list").innerHTML = diagnosisHistory.slice(0, 3)
-    .map(h => `<div class="history-item">
-      <strong>${h.age}y ${h.gender} — ${h.symptoms.slice(0,45)}${h.symptoms.length>45?"…":""}</strong>
-      ${h.preview}
+  document.getElementById("conditions-list").innerHTML = matches.map((d, i) => `
+    <div class="condition-card">
+      <div class="condition-top">
+        <span class="condition-name">${i + 1}. ${d.name}</span>
+        <span class="prob-badge prob-${d.prob.toLowerCase()}">${d.prob} Likelihood</span>
+      </div>
+      <div class="condition-desc">${d.desc}</div>
     </div>`).join("");
+
+  const allTests = [...new Set(matches.flatMap(d => d.tests))].slice(0, 6);
+  document.getElementById("tests-list").innerHTML = allTests.map(t =>
+    `<li><i class="ti ti-circle-check" style="color:var(--info-text)"></i><span>${t}</span></li>`).join("");
+
+  const allActions = [...new Set(matches.flatMap(d => d.actions))].slice(0, 6);
+  document.getElementById("actions-list").innerHTML = allActions.map(a =>
+    `<li><i class="ti ti-arrow-right" style="color:var(--warn-text)"></i><span>${a}</span></li>`).join("");
+
+  const top = matches[0];
+  document.getElementById("redflags-box").innerHTML = top.redflags;
+  document.getElementById("lifestyle-box").innerHTML = top.lifestyle;
+
+  document.getElementById("result-section").classList.add("show");
+  document.getElementById("result-section").scrollIntoView({ behavior: "smooth" });
+}
+
+function resetForm() {
+  document.querySelectorAll(".chip.active").forEach(c => c.classList.remove("active"));
+  ["age","extra"].forEach(id => document.getElementById(id).value = "");
+  ["gender","duration"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("severity").value = 5;
+  document.getElementById("sev-val").textContent = "5";
+  document.getElementById("selected-count").textContent = "";
+  document.getElementById("result-section").classList.remove("show");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 </script>
 </body>
